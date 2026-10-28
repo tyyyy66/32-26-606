@@ -39,9 +39,10 @@ if prompt := st.chat_input("说点什么吧..."):
 
     with st.chat_message("assistant"):
         # 开启流式输出（字一个个蹦）
+        system_prompt = {"role": "system", "content": "你是一个严谨的助手。如果不知道最新的事情，或者不确定的信息，请直接回答‘我不知道，我无法联网查询实时新闻’，绝对不允许胡编乱造。"}
         stream = client.chat.completions.create(
             model="deepseek-chat",
-            messages=st.session_state.messages,
+            messages=[system_prompt] +st.session_state.messages,
             stream=True
         )
         
