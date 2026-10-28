@@ -1,44 +1,55 @@
 import streamlit as st
 from openai import OpenAI
 
-# 网页设置（这就是之前说的魔法 A，顺便加上了）
-st.set_page_config(page_title="我的专属聊天工具", page_icon="💬")
+# 1. 网页高级配置
+st.set_page_config(page_title="我的专属聊天工具", page_icon="💬", layout="wide")
 
+# 2. 从保险箱拿钥匙（绝不能在代码里写死你的 sk-xxx！）
 client = OpenAI(
     api_key=st.secrets["DEEPSEEK_API_KEY"], 
     base_url="https://api.deepseek.com"
 )
 
-st.title("💬 我的专属聊天工具")
+# 3. 加入侧边栏（左边的高级感）
+with st.sidebar:
+    st.title("💬 我的助手")
+    st.caption("基于 DeepSeek 大模型")
+    # 加一个清空聊天记录的按钮
+    if st.button("🗑 清空聊天记录", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
 
+# 4. 页面主标题
+st.title("我的专属聊天工具")
+
+# 5. 初始化聊天记录
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# 显示历史消息
+# 6. 画出历史对话的气泡
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
 
-if prompt := st.chat_input("在这里输入你想说的话..."):
+# 7. 接收输入
+if prompt := st.chat_input("说点什么吧..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.write(prompt)
 
     with st.chat_message("assistant"):
-        # 🌟 这里就是魔法 C 的核心：开启流式输出
+        # 开启流式输出（字一个个蹦）
         stream = client.chat.completions.create(
             model="deepseek-chat",
             messages=st.session_state.messages,
-            stream=True  # 告诉服务器：别等全生成完，生成一点发一点！
+            stream=True
         )
         
-        # 定义一个生成器，把蹦出来的字一个个接住
-        def generate_chunks():
+        def gen():
             for chunk in stream:
                 if chunk.choices[0].delta.content:
                     yield chunk.choices[0].delta.content
                     
-        # st.write_stream 会像打字机一样把字打出来，并返回完整的一句话
-        reply = st.write_stream(generate_chunks())
+        reply = st.write_stream(gen())
         
     st.session_state.messages.append({"role": "assistant", "content": reply})
