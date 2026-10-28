@@ -1,6 +1,6 @@
 import streamlit as st
 from openai import OpenAI
-
+st.set_page_config(page_title="我的超级 AI", page_icon="🤖")
 # 这里用 st.secrets 读取密钥，一会儿在 Streamlit 网页上填
 client = OpenAI(
     api_key=st.secrets["DEEPSEEK_API_KEY"], 
