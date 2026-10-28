@@ -13,6 +13,13 @@ client = OpenAI(
 # 3. 加入侧边栏（左边的高级感）
 with st.sidebar:
     st.title("💬 我的助手")
+     # 🌟 新增：侧边栏人设输入框
+    custom_prompt = st.text_area(
+        "🎭 设置 AI 的人设（提示词）", 
+        value="你是一个乐于助人的中文助手，回答简洁准确。",
+        height=150
+    )
+    
     st.caption("基于 DeepSeek 大模型")
     # 加一个清空聊天记录的按钮
     if st.button("🗑 清空聊天记录", use_container_width=True):
