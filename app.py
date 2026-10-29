@@ -62,7 +62,7 @@ for msg in st.session_state.messages:
         st.write(msg["content"])
 
 # 8. 接收输入并回复
-if prompt := st.chat_input("说点什么吧爸爸（妈妈）..."):
+if prompt := st.chat_input("说点什么吧，爸爸（妈妈）..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.write(prompt)
