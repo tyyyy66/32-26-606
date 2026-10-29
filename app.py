@@ -12,31 +12,43 @@ client = OpenAI(
     base_url="https://api.deepseek.com"
 )
 
-# 3. 侧边栏与人设配置
+HISTORY_FILE = "history.json"
+PROMPT_FILE = "prompt.json"  # 自动生成的“小本子”，用来记住你的提示词
+
+# 3. 读取上一次保存的提示词（如果第一次运行，就用默认的）
+default_prompt = "你是一个乐于助人的中文助手，回答简洁准确。"
+if os.path.exists(PROMPT_FILE):
+    with open(PROMPT_FILE, "r", encoding="utf-8") as f:
+        saved_prompt = json.load(f)
+        default_prompt = saved_prompt.get("prompt", default_prompt)
+
+# 4. 侧边栏与人设配置
 with st.sidebar:
     st.title("💬 我的助手")
     
-    # 🌟 人设输入框（把 KPL 梗写在这里！）
     custom_prompt = st.text_area(
         "🎭 设置 AI 的人设（提示词）", 
-        value="你是一个乐于助人的中文助手，回答简洁准确。",
+        value=default_prompt, 
         height=200
     )
     
+    # 🌟 如果你修改了框框里的词，立刻自动保存到文件里
+    if custom_prompt != default_prompt:
+        with open(PROMPT_FILE, "w", encoding="utf-8") as f:
+            json.dump({"prompt": custom_prompt}, f, ensure_ascii=False)
+            
     st.caption("基于 DeepSeek 大模型")
     
     if st.button("🗑 清空聊天记录", use_container_width=True):
         st.session_state.messages = []
-        # 同时删除本地保存的文件
-        if os.path.exists("history.json"):
-            os.remove("history.json")
+        if os.path.exists(HISTORY_FILE):
+            os.remove(HISTORY_FILE)
         st.rerun()
 
-# 4. 页面主标题
+# 5. 页面主标题
 st.title("我的专属聊天工具")
 
-# 5. 初始化聊天记录（带有本地记忆功能）
-HISTORY_FILE = "history.json"
+# 6. 初始化聊天记录（带有本地记忆功能）
 if "messages" not in st.session_state:
     if os.path.exists(HISTORY_FILE):
         with open(HISTORY_FILE, "r", encoding="utf-8") as f:
@@ -44,22 +56,22 @@ if "messages" not in st.session_state:
     else:
         st.session_state.messages = []
 
-# 6. 画出历史对话的气泡
+# 7. 画出历史对话的气泡
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
 
-# 7. 接收输入并回复
+# 8. 接收输入并回复
 if prompt := st.chat_input("说点什么吧..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.write(prompt)
 
     with st.chat_message("assistant"):
-        # 绑定左侧填写的提示词（不再覆盖）
+        # 绑定左侧填写的提示词
         system_prompt = {"role": "system", "content": custom_prompt}
         
-        # 发送请求，开启流式输出
+        # 发送请求，开启流式输出（字一个个蹦）
         stream = client.chat.completions.create(
             model="deepseek-chat",
             messages=[system_prompt] + st.session_state.messages,
@@ -75,6 +87,6 @@ if prompt := st.chat_input("说点什么吧..."):
         
     st.session_state.messages.append({"role": "assistant", "content": reply})
     
-    # 8. 自动保存聊天记录到 JSON 文件
+    # 9. 自动保存聊天记录
     with open(HISTORY_FILE, "w", encoding="utf-8") as f:
         json.dump(st.session_state.messages, f, ensure_ascii=False, indent=4)
