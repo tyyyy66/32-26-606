@@ -69,7 +69,12 @@ if prompt := st.chat_input("说点什么吧，爸爸（妈妈）..."):
 
     with st.chat_message("assistant"):
         # 绑定左侧填写的提示词
-        system_prompt = {"role": "system", "content": custom_prompt}
+                # 获取当前的北京时间
+        now = datetime.now().strftime("%Y年%m月%d日 %H:%M")
+        # 把时间拼接到你的提示词后面，强制 AI 认清现实
+        time_prompt = custom_prompt + f"\n\n【系统提示：当前的北京时间是 {now}。请以此时间为准，不要瞎猜。】"
+        
+        system_prompt = {"role": "system", "content": time_prompt}
         
         # 发送请求，开启流式输出（字一个个蹦）
         stream = client.chat.completions.create(
