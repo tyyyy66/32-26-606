@@ -3,6 +3,7 @@ from openai import OpenAI
 import json
 import os
 from datetime import datetime
+from datetime import timedelta
 
 # 1. 网页高级配置
 st.set_page_config(page_title="我的专属聊天工具219", page_icon="32-26-606！💬", layout="wide")#串了哈哈哈
@@ -71,7 +72,7 @@ if prompt := st.chat_input("说点什么吧，爸爸（妈妈）..."):
     with st.chat_message("assistant"):
         # 绑定左侧填写的提示词
                 # 获取当前的北京时间
-        now = datetime.now().strftime("%Y年%m月%d日 %H:%M")
+        now = (datetime.now() + timedelta(hours=8)).strftime("%Y年%m月%d日 %H:%M")
         # 把时间拼接到你的提示词后面，强制 AI 认清现实
         time_prompt = custom_prompt + f"\n\n【系统提示：当前的北京时间是 {now}。请以此时间为准，不要瞎猜。】"
         
