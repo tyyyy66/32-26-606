@@ -74,7 +74,7 @@ if prompt := st.chat_input("说点什么吧，爸爸（妈妈）..."):
         # 发送请求，开启流式输出（字一个个蹦）
         stream = client.chat.completions.create(
             model="deepseek-chat",
-            messages=[system_prompt] + st.session_state.messages,
+            messages=[system_prompt] + st.session_state.messages[-20:], # 只带最近20条（10轮），节约token，毕竟我是个穷逼
             stream=True
         )
         
