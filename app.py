@@ -45,12 +45,15 @@ with st.sidebar:
         pass
 
     st.caption("基于 DeepSeek 大模型")
-    if st.button("🗑 清空聊天记录", use_container_width=True):
-        st.session_state.messages = []#清除聊天记录
-        if os.path.exists(HISTORY_FILE):#判断聊天记录是否存在
-            os.remove(HISTORY_FILE)
-        st.rerun()#立即重新运行
-
+# 🌟 冷静窗口：使用 popover 气泡弹窗
+    with st.popover("🗑 清空聊天记录", use_container_width=True):
+        st.write("确定要删除所有聊天记录吗？此操作无法撤销哦。")
+        # 只有点了下面这个红色的“确认清空”，才会真的删
+        if st.button("🔥 确认清空", type="primary", use_container_width=True):
+            st.session_state.messages = []
+            if os.path.exists(HISTORY_FILE):
+                os.remove(HISTORY_FILE)
+            st.rerun()
 # 5. 页面主标题
 st.title("我的专属聊天工具219")
 
