@@ -33,17 +33,16 @@ with st.sidebar:
         value=default_prompt, 
         height=200
     )
-with open(PROMPT_FILE, "w", encoding="utf-8") as f:
-    json.dump({"prompt": custom_prompt}, f, ensure_ascii=False)
-            
+
     st.caption("基于 DeepSeek 大模型")
-    
     if st.button("🗑 清空聊天记录", use_container_width=True):
         st.session_state.messages = []#清除聊天记录
         if os.path.exists(HISTORY_FILE):#判断聊天记录是否存在
             os.remove(HISTORY_FILE)
         st.rerun()#立即重新运行
-
+with open(PROMPT_FILE, "w", encoding="utf-8") as f:
+    json.dump({"prompt": custom_prompt}, f, ensure_ascii=False)    
+   
 # 5. 页面主标题
 st.title("我的专属聊天工具219")
 
@@ -96,4 +95,4 @@ if prompt := st.chat_input("说点什么吧，爸爸（妈妈）..."):
         with open(HISTORY_FILE, "w", encoding="utf-8") as f:
             json.dump(st.session_state.messages, f, ensure_ascii=False, indent=4)
     except Exception:
-        pass
+        st.error(f"聊天记录保存失败：{e}")
