@@ -80,7 +80,7 @@ if prompt := st.chat_input("说点什么吧，爸爸（妈妈）..."):
     with st.chat_message("assistant"):# 绑定左侧填写的提示词, 获取当前的北京时间
         search_result = ""#新增判断是否需要联网搜索
 
-        if any(keyword in prompt for keyword in ["最近", "新闻", "现在", "今天", "姆巴佩"]):
+        if "?" in prompt or "？" in prompt or len(prompt) > 5:
             st.info(f"🌐 正在全网搜索关于“{prompt}”的最新情报...")
 
             try:
