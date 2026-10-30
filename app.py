@@ -33,11 +33,8 @@ with st.sidebar:
         value=default_prompt, 
         height=200
     )
-    
-    # 🌟 如果你修改了框框里的词，立刻自动保存到文件里
-    if custom_prompt != default_prompt:#判断提示词是否被修改
-        with open(PROMPT_FILE, "w", encoding="utf-8") as f:
-            json.dump({"prompt": custom_prompt}, f, ensure_ascii=False)
+with open(PROMPT_FILE, "w", encoding="utf-8") as f:
+    json.dump({"prompt": custom_prompt}, f, ensure_ascii=False)
             
     st.caption("基于 DeepSeek 大模型")
     
@@ -94,6 +91,9 @@ if prompt := st.chat_input("说点什么吧，爸爸（妈妈）..."):
         
     st.session_state.messages.append({"role": "assistant", "content": reply})
     
-    # 9. 自动保存聊天记录
-    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-        json.dump(st.session_state.messages, f, ensure_ascii=False, indent=4)
+       # 9. 自动保存聊天记录（加上防崩溃保护）
+    try:
+        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+            json.dump(st.session_state.messages, f, ensure_ascii=False, indent=4)
+    except Exception:
+        pass
