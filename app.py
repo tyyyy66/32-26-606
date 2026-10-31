@@ -9,7 +9,36 @@ import re
 
 # 1. 网页高级配置
 st.set_page_config(page_title="我的专属聊天工具219", page_icon="32-26-606！💬", layout="wide")#串了哈哈哈
-
+# 🌟 新增：注入 CSS 魔法，美化界面
+st.markdown("""
+<style>
+    /* 1. 网页主背景：换成高级的暗夜渐变色 */
+    .stApp {
+        background: linear-gradient(135deg, #1e1e2f 0%, #14141d 100%);
+    }
+    
+    /* 2. 侧边栏：换成半透明的玻璃质感 */
+    [data-testid="stSidebar"] {
+        background-color: rgba(30, 30, 47, 0.7) !important;
+        backdrop-filter: blur(10px);
+    }
+    
+    /* 3. 聊天气泡：增加一点圆角和阴影 */
+    [data-testid="stChatMessage"] {
+        background-color: #26263b;
+        border-radius: 15px;
+        padding: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* 4. 标题美化：让字有点发光的感觉 */
+    h1 {
+        color: #ffffff !important;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+</style>
+""", unsafe_allow_html=True)
+# 🌟 魔法结束
 # 2. 连接 DeepSeek
 try:
     client = OpenAI(
